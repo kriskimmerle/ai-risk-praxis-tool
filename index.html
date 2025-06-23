@@ -1798,36 +1798,55 @@
         }
         
         function getNISTUrl(control) {
-            const baseUrl = 'https://ai.gov';
-            const controlMap = {
-                'GOVERN': `${baseUrl}/ai-risk-management-framework/govern/`,
-                'MAP': `${baseUrl}/ai-risk-management-framework/map/`,
-                'MEASURE': `${baseUrl}/ai-risk-management-framework/measure/`,
-                'MANAGE': `${baseUrl}/ai-risk-management-framework/manage/`
-            };
+            // Extract category and subcategory from control string
+            // Example: "GOVERN-1.1: Context understanding" -> category: "GOVERN", subcategory: "1.1"
+            const match = control.match(/^(GOVERN|MAP|MEASURE|MANAGE)-(\d+)(?:\.(\d+))?/);
             
-            const category = control.split('-')[0];
-            return controlMap[category] || `${baseUrl}/ai-risk-management-framework/`;
+            if (!match) {
+                // Fallback to general NIST AI RMF page
+                return 'https://airc.nist.gov/AI_RMF_Knowledge_Base/AI_RMF';
+            }
+            
+            const [, category, major, minor] = match;
+            const categoryLower = category.toLowerCase();
+            
+            // Build URL based on pattern: https://airc.nist.gov/airmf-resources/playbook/govern/#govern-1
+            // or https://airc.nist.gov/airmf-resources/playbook/govern/#govern-2-1
+            let anchor = `${categoryLower}-${major}`;
+            if (minor) {
+                anchor += `-${minor}`;
+            }
+            
+            return `https://airc.nist.gov/airmf-resources/playbook/${categoryLower}/#${anchor}`;
         }
         
         function getOWASPUrl(control) {
-            const baseUrl = 'https://owasp.org/www-project-top-10-for-large-language-model-applications';
+            // Extract LLM code from control string
+            // Example: "LLM01:2025 Prompt Injection" -> "LLM01"
+            const match = control.match(/^(LLM\d{2}):2025/);
             
+            if (!match) {
+                // Fallback to general OWASP page
+                return 'https://genai.owasp.org/llmrisk/';
+            }
+            
+            const llmCode = match[1];
+            
+            // Map LLM codes to their specific URLs
             const controlMap = {
-                'LLM01': `${baseUrl}/Archive/1_1_PromptInjection/`,
-                'LLM02': `${baseUrl}/Archive/1_1_SensitiveInfoDisclosure/`,
-                'LLM03': `${baseUrl}/Archive/1_1_SupplyChain/`,
-                'LLM04': `${baseUrl}/Archive/1_1_ModelDoS/`,
-                'LLM05': `${baseUrl}/Archive/1_1_OutputHandling/`,
-                'LLM06': `${baseUrl}/Archive/1_1_ExcessiveAgency/`,
-                'LLM07': `${baseUrl}/Archive/1_1_SystemPrompt/`,
-                'LLM08': `${baseUrl}/Archive/1_1_VectorEmbedding/`,
-                'LLM09': `${baseUrl}/Archive/1_1_Misinformation/`,
-                'LLM10': `${baseUrl}/Archive/1_1_UnboundedConsumption/`
+                'LLM01': 'https://genai.owasp.org/llmrisk/llm01-prompt-injection/',
+                'LLM02': 'https://genai.owasp.org/llmrisk/llm022025-sensitive-information-disclosure/',
+                'LLM03': 'https://genai.owasp.org/llmrisk/llm032025-supply-chain/',
+                'LLM04': 'https://genai.owasp.org/llmrisk/llm042025-data-and-model-poisoning/',
+                'LLM05': 'https://genai.owasp.org/llmrisk/llm052025-improper-output-handling/',
+                'LLM06': 'https://genai.owasp.org/llmrisk/llm062025-excessive-agency/',
+                'LLM07': 'https://genai.owasp.org/llmrisk/llm072025-system-prompt-leakage/',
+                'LLM08': 'https://genai.owasp.org/llmrisk/llm082025-vector-and-embedding-weaknesses/',
+                'LLM09': 'https://genai.owasp.org/llmrisk/llm092025-misinformation/',
+                'LLM10': 'https://genai.owasp.org/llmrisk/llm102025-unbounded-consumption/'
             };
             
-            const llmCode = control.substring(0, 5);
-            return controlMap[llmCode] || baseUrl;
+            return controlMap[llmCode] || 'https://genai.owasp.org/llmrisk/';
         }
         
         function getEUActUrl(control) {
