@@ -55,21 +55,6 @@ This project uses a **single-file architecture** with embedded CSS and JavaScrip
 - **OWASP Top 10 for LLM Apps 2025**: Security vulnerabilities specific to large language models
 - **EU AI Act 2024**: Regulatory requirements for AI systems in the European Union
 
-## Development
-
-The application requires no build process or dependencies. Simply edit `index.html` to make changes.
-
-### Making Updates
-
-1. Edit the embedded JavaScript section for logic changes
-2. Modify the CSS section for styling updates
-3. Update the QUESTIONS array for content changes
-4. Test locally by opening the file in a browser
-
-## Deployment
-
-Deploy by hosting the single `index.html` file on any web server or static hosting service.
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
