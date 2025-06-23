@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Risk Praxis Self Assessment Tool</title>
+    <meta name="description" content="A preliminary triage system to help identify potential AI risk areas based on established frameworks.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Light theme variables */
+            --color-background: #fafafa;
+            --color-surface: #ffffff;
+            --color-border: #e0e0e0;
+            --color-text-primary: #2c2c2c;
+            --color-text-secondary: #666;
+            --color-text-muted: #999;
+        }
+        
+        /* Dark mode variables */
+        :root[data-theme="dark"] {
+            --color-background: #0f172a;
+            --color-surface: #1e293b;
+            --color-border: #475569;
+            --color-text-primary: #f8fafc;
+            --color-text-secondary: #cbd5e1;
+            --color-text-muted: #94a3b8;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                --color-background: #0f172a;
+                --color-surface: #1e293b;
+                --color-border: #475569;
+                --color-text-primary: #f8fafc;
+                --color-text-secondary: #cbd5e1;
+                --color-text-muted: #94a3b8;
+            }
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            text-transform: none;
+            color: #e53e3e;
+            margin-bottom: 1rem;
+        }
+        
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 30px;
+            background: var(--color-border);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 3px;
+        }
+        
+        .theme-toggle.dark {
+            background: #e53e3e;
+        }
+        
+        .theme-toggle-slider {
+            width: 24px;
+            height: 24px;
+            background: var(--color-surface);
+            border-radius: 50%;
+            transition: transform 0.3s ease, background 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .theme-toggle.dark .theme-toggle-slider {
+            transform: translateX(30px);
+            background: #ffffff;
+        }
+        
+        .sun-icon,
+        .moon-icon {
+            transition: opacity 0.3s ease;
+            color: #000;
+            filter: none;
+        }
+        
+        .theme-toggle.dark .sun-icon {
+            display: none;
+        }
+        
+        .theme-toggle:not(.dark) .moon-icon {
+            display: none;
+        }
+        
+        .theme-toggle.dark .moon-icon {
+            display: block;
+        }
+        
+        .theme-toggle:not(.dark) .sun-icon {
+            display: block;
+        }
+        
+        /* Main Content Areas */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .question-container {
+            text-align: left;
+            margin-bottom: 3rem;
+        }
+        
+        .question {
+            font-size: 2.25rem;
+            font-weight: 900;
+            color: var(--color-text-primary);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        
+        .question-subtext {
+            font-size: 1rem;
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+        
+        .intro-text {
+            margin-bottom: 2rem;
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.7;
+            text-align: left;
+        }
+        
+        :root[data-theme="dark"] .intro-text {
+            color: #f8fafc !important;
+        }
+        
+        /* Answer grid */
+        .answers {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        /* Individual answer cards */
+        .answer-card {
+            border: 2px solid var(--color-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            background: var(--color-surface);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .answer-card:hover {
+            border-color: var(--color-text-muted);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .answer-card.selected {
+            border-color: #e53e3e;
+            background: #e53e3e;
+            color: #ffffff;
+        }
+        
+        .answer-card.selected .answer-sub {
+            opacity: 0.9;
+        }
+        
+        .answer-card.selected .radio {
+            border-color: #ffffff;
+            background: #ffffff;
+        }
+        
+        .answer-card.selected .radio::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: #e53e3e;
+            border-radius: 50%;
+        }
+        
+        .answer-card.selected .checkbox {
+            border-color: #ffffff;
+            background: #ffffff;
+        }
+        
+        .answer-card.selected .checkbox::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #e53e3e;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        
+        .answer-card.selected .info-button {
+            border-color: #ffffff;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .answer-card.selected .info-button:hover {
+            background: #ffffff;
+            color: #e53e3e;
+        }
+        
+        .answer-card.selected .info-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-left-color: #ffffff;
+        }
+        
+        .answer-card.selected .info-section h5 {
+            color: #ffffff;
+        }
+        
+        .answer-card.selected .info-section a {
+            color: #ffffff;
+        }
+        
+        /* Radio and checkbox controls */
+        .radio,
+        .checkbox {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ccc;
+            background: #ffffff;
+        }
+        
+        .radio {
+            border-radius: 50%;
+        }
+        
+        .checkbox {
+            border-radius: 4px;
+        }
+        
+        /* Answer text content */
+        .answer-main {
+            font-size: 1.125rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            text-align: left;
+        }
+        
+        .answer-sub {
+            font-size: 0.875rem;
+            opacity: 0.8;
+            text-align: left;
+        }
+        
+        /* Info button */
+        .info-button {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #666;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+        
+        .info-button:hover {
+            border-color: #e53e3e;
+            color: #e53e3e;
+            background: #ffffff;
+        }
+        
+        /* Info section (expandable) */
+        .info-section {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--color-surface);
+            border-radius: 8px;
+            border-left: 3px solid #e53e3e;
+            border: 1px solid var(--color-border);
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+        
+        .info-section.expanded {
+            display: block;
+        }
+        
+        .info-section h5 {
+            color: #e53e3e;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        
+        .info-section ul {
+            margin: 0.5rem 0;
+            padding-left: 1rem;
+        }
+        
+        .info-section li {
+            margin-bottom: 0.25rem;
+        }
+        
+        .info-section a {
+            color: #e53e3e;
+            text-decoration: none;
+        }
+        
+        .info-section a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Progress bar */
+        .progress-tracker {
+            margin-bottom: 2rem;
+        }
+        
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: var(--color-border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #e53e3e, #e53e3e);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        
+        .progress-text {
+            font-size: 0.875rem;
+            color: var(--color-text-secondary);
+            text-align: center;
+        }
+        
+        /* Navigation buttons */
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+        
+        .start-btn,
+        .continue-btn {
+            background: #e53e3e;
+            color: #ffffff;
+        }
+        
+        .start-btn:hover,
+        .continue-btn:hover:not(:disabled) {
+            background: #c53030;
+            transform: translateY(-1px);
+        }
+        
+        .continue-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .back-btn {
+            background: transparent;
+            color: var(--color-text-secondary);
+            border: 1px solid var(--color-border);
+        }
+        
+        .back-btn:hover {
+            background: var(--color-surface);
+            border-color: var(--color-text-muted);
+        }
+        
+        .restart-btn {
+            background: #e53e3e;
+            color: #ffffff;
+            margin: 2rem auto 0;
+            display: block;
+        }
+        
+        .restart-btn:hover {
+            background: #c53030;
+        }
+        
+        /* Disclaimer box */
+        .disclaimer {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .disclaimer h3 {
+            color: #856404;
+            margin-bottom: 1rem;
+            font-size: 1.125rem;
+        }
+        
+        .disclaimer p {
+            color: #856404;
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+        }
+        
+        .disclaimer p:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* Results screen */
+        .results-container {
+            display: none;
+        }
+        
+        .results-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .results-header h2 {
+            font-size: 2.5rem;
+            color: var(--color-text-primary);
+            margin-bottom: 1rem;
+        }
+        
+        .results-subtitle {
+            color: var(--color-text-secondary);
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        /* Narrative Summary */
+        .narrative-summary {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 2px solid #e53e3e;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .narrative-summary::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #e53e3e, #f56565);
+            border-radius: 16px;
+            z-index: -1;
+        }
+        
+        .narrative-summary h3 {
+            color: #e53e3e;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-align: left;
+        }
+        
+        :root[data-theme="dark"] .narrative-summary h3 {
+            color: #f56565;
+        }
+        
+        .narrative-text {
+            color: var(--color-text-primary);
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+        
+        .narrative-text p {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+        
+        .narrative-text p:last-child {
+            margin-bottom: 0;
+        }
+        
+        :root[data-theme="dark"] .narrative-text {
+            color: #2c2c2c;
+        }
+        
+        :root[data-theme="dark"] .narrative-summary {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        }
+        
+        /* Practical Guidance */
+        .practical-guidance {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border-left: 4px solid #e53e3e;
+        }
+        
+        .practical-guidance h4 {
+            color: #e53e3e;
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .guidance-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .guidance-list li {
+            color: #718096;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+            line-height: 1.5;
+        }
+        
+        .guidance-list li::before {
+            content: '▶';
+            color: #e53e3e;
+            font-size: 0.75rem;
+            position: absolute;
+            left: 0;
+            top: 0.2rem;
+        }
+        
+        .guidance-list li:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* References Header */
+        .references-header {
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .references-header h2 {
+            font-size: 1.75rem;
+            color: #e53e3e;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        :root[data-theme="dark"] .references-header h2 {
+            color: #f56565;
+        }
+        
+        /* Framework Dashboard */
+        .frameworks-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .framework-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 2rem;
+            border: 2px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+        
+        .framework-card:hover {
+            border-color: #e53e3e;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .framework-card h3 {
+            font-size: 1.5rem;
+            color: #e53e3e;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e53e3e;
+        }
+        
+        :root[data-theme="dark"] .framework-card h3 {
+            color: #f56565;
+        }
+        
+        /* Dark mode overrides for framework cards */
+        :root[data-theme="dark"] .framework-card {
+            background: var(--color-surface);
+            border-color: var(--color-border);
+        }
+        
+        :root[data-theme="dark"] .framework-controls li {
+            color: var(--color-text-primary) !important;
+            border-bottom-color: var(--color-border);
+        }
+        
+        :root[data-theme="dark"] .framework-controls a {
+            color: var(--color-text-primary);
+        }
+        
+        :root[data-theme="dark"] .framework-controls a:hover {
+            color: #f56565;
+        }
+        
+        .framework-controls {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .framework-controls li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+        
+        .framework-controls li:last-child {
+            border-bottom: none;
+        }
+        
+        .framework-controls li:before {
+            content: "•";
+            color: #e53e3e;
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-right: 0.5rem;
+        }
+        
+        .framework-controls a {
+            color: #718096;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .framework-controls a:hover {
+            color: #e53e3e;
+            text-decoration: underline;
+        }
+        
+        .no-controls {
+            color: #a0aec0;
+            font-style: italic;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        /* Results Actions */
+        .results-actions {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: auto;
+            padding: 2rem 0 1rem;
+            border-top: 1px solid var(--color-border);
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links a {
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--color-text-primary);
+            text-decoration: underline;
+        }
+        
+        /* Screen management */
+        .start-container,
+        .question-screen,
+        .results-container {
+            display: none;
+        }
+        
+        .start-container.active,
+        .question-screen.active,
+        .results-container.active {
+            display: block;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 640px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .question {
+                font-size: 1.75rem;
+            }
+            
+            .theme-toggle {
+                top: -10px;
+                right: -10px;
+            }
+            
+            .navigation-buttons {
+                flex-direction: column;
+            }
+            
+            .frameworks-dashboard {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>AI Risk Praxis Self Assessment Tool</h1>
+            <div class="theme-toggle" data-action="toggle-theme">
+                <div class="theme-toggle-slider">
+                    <span class="sun-icon">☀️</span>
+                    <span class="moon-icon">🌙</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Start Screen -->
+        <div class="start-container active" id="startScreen">
+            <div class="main-content">
+                <div class="question-container">
+                    <p class="intro-text">Most practitioners know they need to manage AI risk, but the guidance lives in 200-page PDFs and vendor dashboards. Faced with that overload, many freeze or follow checklists they do not understand. This tool is the on-ramp. Use it whether you embed a proprietary model, run open weights, or rely on a vendor feature already baked into your stack. It gets you from zero to one, then hands the baton back so you can tailor the next steps to your own reality.</p>
+                </div>
+                
+                <div class="disclaimer">
+                    <h3>Important Disclaimer</h3>
+                    <p><strong>For informational purposes only.</strong> This tool provides preliminary guidance based on our interpretation of established frameworks and should not replace formal risk assessment, compliance audits, or professional advice.</p>
+                    <p><strong>Your responsibility.</strong> You are solely responsible for conducting thorough risk analysis and ensuring compliance with applicable laws and regulations.</p>
+                    <p>By proceeding, you acknowledge this tool is provided "AS IS" without warranty and understand the limitations outlined in our Terms of Use.</p>
+                </div>
+                
+                <button class="start-btn btn" onclick="startAssessment()">Start Assessment</button>
+            </div>
+        </div>
+        
+        <!-- Question Screen -->
+        <div class="question-screen" id="questionScreen">
+            <div class="progress-tracker">
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="progress-text" id="progressText">Step 1 of 12</div>
+            </div>
+            
+            <div class="main-content">
+                <div class="question-container">
+                    <h2 class="question" id="questionText">Loading question...</h2>
+                    <p class="question-subtext" id="questionSubtext"></p>
+                </div>
+                
+                <div class="answers" id="answersContainer">
+                    <!-- Answers will be populated by JavaScript -->
+                </div>
+                
+                <div class="navigation-buttons">
+                    <button class="back-btn btn" id="backBtn" onclick="goBack()" style="visibility: hidden;">
+                        ← Back
+                    </button>
+                    <button class="continue-btn btn" id="continueBtn" onclick="nextQuestion()" disabled>
+                        Continue →
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results Screen -->
+        <div class="results-container" id="resultsScreen">
+            <div class="results-header">
+                <h2>Results</h2>
+                <p class="results-subtitle">Based on your responses, here's a comprehensive analysis of your AI system:</p>
+            </div>
+            
+            <div class="narrative-summary" id="narrativeSummary">
+                <!-- Narrative summary will be populated by JavaScript -->
+            </div>
+            
+            <div class="references-header">
+                <h2>Relevant References</h2>
+            </div>
+            
+            <div class="frameworks-dashboard" id="frameworksDashboard">
+                <!-- Framework cards will be populated by JavaScript -->
+            </div>
+            
+            <div class="results-actions">
+                <button class="restart-btn btn" onclick="location.reload()">Start New Assessment</button>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="#" onclick="showTerms(); return false;">Terms of Use</a>
+            <a href="https://kriskimmerle.substack.com/" target="_blank">AI Risk Praxis Substack</a>
+            <a href="https://github.com/kriskimmerle/ai-risk-praxis-tool" target="_blank">View source code on GitHub</a>
+        </div>
+    </footer>
+
+    <script>
+        // Updated questions with new structure and subtext
+        const questions = [
+            {
+                id: 'domain',
+                text: 'Which best describes the domain of your AI application?',
+                subtext: 'Knowing whether the use case falls into a regulated or high-stakes field sets the floor for compliance, testing, and audit depth.',
+                answers: [
+                    {
+                        option: 'General-purpose, non-critical',
+                        main: 'General-purpose, non-critical',
+                        sub: 'Productivity, content generation, general assistance'
+                    },
+                    {
+                        option: 'Regulated or high-stakes',
+                        main: 'Regulated or high-stakes',
+                        sub: 'Healthcare, finance, insurance, legal, HR, safety-critical'
+                    }
+                ]
+            },
+            {
+                id: 'deployment_scenario',
+                text: 'Which scenario best matches how your organization delivers this generative-AI capability?',
+                subtext: 'Delivery model defines who owns which controls and where liability sits.',
+                answers: [
+                    {
+                        option: 'Vendor AI SaaS product',
+                        main: 'Vendor AI SaaS product',
+                        sub: 'Microsoft 365 Copilot, Salesforce Einstein, Cursor'
+                    },
+                    {
+                        option: 'AI feature added to an existing vendor product',
+                        main: 'AI feature added to an existing vendor product',
+                        sub: 'Acrobat with LLM summarize'
+                    },
+                    {
+                        option: 'Homegrown AI',
+                        main: 'Homegrown AI',
+                        sub: 'Host your own model or invoke an external model API inside your code'
+                    }
+                ]
+            },
+            {
+                id: 'capabilities',
+                text: 'Which capabilities does the system provide? (Select all that apply)',
+                subtext: 'Each modality carries its own misuse patterns and attack surface, from prompt injection in chat to deepfake abuse in media.',
+                answers: [
+                    {
+                        option: 'Conversational interaction',
+                        main: 'Conversational interaction',
+                        sub: 'Chatbots, virtual assistants, customer support'
+                    },
+                    {
+                        option: 'Text generation',
+                        main: 'Text generation',
+                        sub: 'Articles, reports, creative writing'
+                    },
+                    {
+                        option: 'Image, audio, or video generation',
+                        main: 'Image, audio, or video generation',
+                        sub: 'Synthetic media assets'
+                    },
+                    {
+                        option: 'Code generation or analysis',
+                        main: 'Code generation or analysis',
+                        sub: 'Programming help, code review, dev tooling'
+                    }
+                ]
+            },
+            {
+                id: 'audience',
+                text: 'Who can interact with the AI system?',
+                subtext: 'Expanding access from employees to customers or the public multiplies privacy obligations and fraud risk.',
+                answers: [
+                    {
+                        option: 'Internal users only',
+                        main: 'Internal users only',
+                        sub: 'Employees and authorized personnel'
+                    },
+                    {
+                        option: 'External users only',
+                        main: 'External users only',
+                        sub: 'Customers, partners, or the public'
+                    },
+                    {
+                        option: 'Both internal and external users',
+                        main: 'Both internal and external users',
+                        sub: 'Mixed access with different permission levels'
+                    }
+                ]
+            },
+            {
+                id: 'input_sensitivity',
+                text: 'What is the highest sensitivity of data users may enter?',
+                subtext: 'Data classification determines encryption, logging, retention, and breach-notification duties.',
+                answers: [
+                    {
+                        option: 'Public or non-sensitive',
+                        main: 'Public or non-sensitive',
+                        sub: 'General information, public datasets, benign content'
+                    },
+                    {
+                        option: 'Confidential or personal',
+                        main: 'Confidential or personal',
+                        sub: 'PII, customer data, employee records'
+                    },
+                    {
+                        option: 'Highly sensitive IP or strategic',
+                        main: 'Highly sensitive IP or strategic',
+                        sub: 'Trade secrets, proprietary algorithms, strategic plans'
+                    }
+                ]
+            },
+            {
+                id: 'data_access',
+                text: 'Does the system fetch any additional data at runtime beyond the user prompt (for example through RAG, vector search, or live web queries)?',
+                subtext: 'Runtime lookups open new ingress and egress paths that must be authenticated, authorised, and monitored.',
+                answers: [
+                    {
+                        option: 'Yes',
+                        main: 'Yes',
+                        sub: 'Queries internal repositories, private APIs, or external sources such as web search'
+                    },
+                    {
+                        option: 'No',
+                        main: 'No',
+                        sub: 'Uses only the model\'s weights and the user\'s current prompt'
+                    }
+                ]
+            },
+            {
+                id: 'training_method',
+                text: 'Has the model been fine-tuned?',
+                subtext: 'Fine-tuning introduces fresh data-handling duties and version-control overhead.',
+                answers: [
+                    {
+                        option: 'No, base model only',
+                        main: 'No, base model only',
+                        sub: 'Off the shelf, no extra training'
+                    },
+                    {
+                        option: 'Yes, fine-tuned with public or non-sensitive data',
+                        main: 'Yes, fine-tuned with public or non-sensitive data',
+                        sub: 'Additional training on public or non-sensitive datasets'
+                    },
+                    {
+                        option: 'Yes, fine-tuned with sensitive or proprietary data',
+                        main: 'Yes, fine-tuned with sensitive or proprietary data',
+                        sub: 'Training on proprietary or confidential organizational data'
+                    }
+                ]
+            },
+            {
+                id: 'model_origin',
+                text: 'Is the foundation model open source or proprietary?',
+                subtext: 'Model origin affects licensing terms, patch cadence, and supply-chain exposure.',
+                answers: [
+                    {
+                        option: 'Open source model',
+                        main: 'Open source model',
+                        sub: 'Llama, Mistral'
+                    },
+                    {
+                        option: 'Proprietary service',
+                        main: 'Proprietary service',
+                        sub: 'OpenAI, Anthropic, Gemini'
+                    }
+                ]
+            },
+            {
+                id: 'statefulness',
+                text: 'Does the system retain conversation history?',
+                subtext: 'Persisted chat logs widen the privacy surface and expand incident response scope.',
+                answers: [
+                    {
+                        option: 'Yes',
+                        main: 'Yes',
+                        sub: 'Stores user context across sessions'
+                    },
+                    {
+                        option: 'No',
+                        main: 'No',
+                        sub: 'Each interaction is stateless'
+                    }
+                ]
+            },
+            {
+                id: 'deployment_architecture',
+                text: 'How is the system deployed?',
+                subtext: 'Network posture drives identity, observability, and data-egress controls.',
+                answers: [
+                    {
+                        option: 'Public cloud, isolated',
+                        main: 'Public cloud, isolated',
+                        sub: 'Multi-tenant SaaS or single-tenant VPC with no link to the corporate network'
+                    },
+                    {
+                        option: 'Public cloud, hybrid',
+                        main: 'Public cloud, hybrid',
+                        sub: 'Cloud VPC or VNet connected to internal resources through VPN, Direct Connect, or Private Link'
+                    },
+                    {
+                        option: 'On premises or private cloud',
+                        main: 'On premises or private cloud',
+                        sub: 'Hosted in a company-controlled data center'
+                    },
+                    {
+                        option: 'Edge or client device',
+                        main: 'Edge or client device',
+                        sub: 'Runs on laptops, mobiles, or other endpoints'
+                    }
+                ]
+            },
+            {
+                id: 'agency',
+                text: 'Can the system trigger external actions or tool calls?',
+                subtext: 'The moment a model can change real systems, misuse risk shifts from bad answers to bad actions.',
+                answers: [
+                    {
+                        option: 'No',
+                        main: 'No',
+                        sub: 'It only delivers information or recommendations'
+                    },
+                    {
+                        option: 'Yes',
+                        main: 'Yes',
+                        sub: 'It can invoke tools, call APIs, or modify data and systems'
+                    }
+                ]
+            },
+            {
+                id: 'autonomy_level',
+                text: 'If yes, how is oversight handled?',
+                subtext: 'The autonomy level dictates how much real-time control and auditing you need.',
+                answers: [
+                    {
+                        option: 'Human in the loop',
+                        main: 'Human in the loop',
+                        sub: 'Each action needs explicit approval'
+                    },
+                    {
+                        option: 'Fully autonomous',
+                        main: 'Fully autonomous',
+                        sub: 'Executes actions without real-time human review'
+                    }
+                ]
+            }
+        ];
+        
+        // Updated risk analysis data to match new questions
+        const riskAnalysis = {
+            'domain': {
+                'General-purpose, non-critical': {
+                    frameworks: {
+                        'NIST AI RMF': ['MAP-1.1: Context understanding', 'MEASURE-2.5: Information validity'],
+                        'OWASP Top 10 for LLM Apps': ['LLM01:2025 Prompt Injection', 'LLM09:2025 Misinformation'],
+                        'EU AI Act': ['Article 50: Transparency obligations', 'Limited-risk system requirements']
+                    }
+                },
+                'Regulated or high-stakes': {
+                    frameworks: {
+                        'NIST AI RMF': ['GOVERN-1: Risk Management Process', 'MEASURE-2.7: Security resilience', 'MANAGE-2.4: System controls'],
+                        'OWASP Top 10 for LLM Apps': ['LLM02:2025 Sensitive Information Disclosure', 'LLM06:2025 Excessive Agency', 'LLM07:2025 System Prompt Leakage'],
+                        'EU AI Act': ['Annex III: High-risk AI systems', 'Article 9: Risk management system', 'Article 10: Data governance']
+                    }
+                }
+            },
+            'deployment_scenario': {
+                'Vendor AI SaaS product': {
+                    frameworks: {
+                        'NIST AI RMF': ['GOVERN-5: Third-Party Relationships', 'GOVERN-1: Risk Management Process'],
+                        'OWASP Top 10 for LLM Apps': ['LLM03:2025 Supply Chain', 'LLM09:2025 Misinformation'],
+                        'EU AI Act': ['Article 26: Obligations of deployers', 'Article 27: Fundamental rights impact assessment']
+                    }
+                },
+                'AI feature added to an existing vendor product': {
+                    frameworks: {
+                        'NIST AI RMF': ['GOVERN-5: Third-Party Relationships', 'GOVERN-2: Organizational structures and processes'],
+                        'OWASP Top 10 for LLM Apps': ['LLM03:2025 Supply Chain', 'LLM06:2025 Excessive Agency'],
+                        'EU AI Act': ['Article 26: Obligations of deployers', 'Article 25: Obligations of providers of AI systems']
+                    }
+                },
+                'Homegrown AI': {
+                    frameworks: {
+                        'NIST AI RMF': ['MAP-1: Contextual Understanding', 'MAP-2.3, MEASURE-2.5: TEVV processes', 'GOVERN-1: Risk Management Process'],
+                        'OWASP Top 10 for LLM Apps': ['LLM01:2025 Prompt Injection', 'LLM04: Data and Model Poisoning', 'LLM05:2025 Improper Output Handling'],
+                        'EU AI Act': ['Article 16: Obligations of providers', 'Chapter III, Section 2: Requirements for high-risk AI systems', 'Article 9: Risk management system']
+                    }
+                }
+            },
+            'capabilities': {
+                'Conversational interaction': {
+                    frameworks: {
+                        'NIST AI RMF': ['MAP-1.1: Context understanding', 'MEASURE-2.5: Information validity'],
+                        'OWASP Top 10 for LLM Apps': ['LLM01:2025 Prompt Injection', 'LLM09:2025 Misinformation'],
+                        'EU AI Act': ['Article 50: Transparency obligations']
+                    }
+                },
+                'Text generation': {
+                    frameworks: {
+                        'NIST AI RMF': ['MEASURE-2.5: Validity and reliability'],
+                        'OWASP Top 10 for LLM Apps': ['LLM09:2025 Misinformation'],
+                        'EU AI Act': ['Article 50(2),(4): Synthetic content disclosure', 'Article 53(1)(c): Copyright compliance']
+                    }
+                },
+                'Image, audio, or video generation': {
+                    frameworks: {
+                        'OWASP Top 10 for LLM Apps': ['LLM09:2025 Misinformation'],
+                        'EU AI Act': ['Article 50(2),(4): Deep fake disclosure', 'Article 5(1)(e): Facial recognition restrictions']
+                    }
+                },
+                'Code generation or analysis': {
+                    frameworks: {
+                        'OWASP Top 10 for LLM Apps': ['LLM05:2025 Improper Output Handling', 'LLM09:2025 Misinformation', 'LLM03:2025 Supply Chain'],
+                        'EU AI Act': ['High-risk obligations if code for high-risk systems']
+                    }
+                }
+            },
+            'audience': {
+                'Internal users only': {
+                    frameworks: {
+                        'NIST AI RMF': ['GOVERN-2.1: Role establishment', 'GOVERN-2.2: Personnel training'],
+                        'OWASP Top 10 for LLM Apps': ['LLM02:2025 Sensitive Information Disclosure', 'LLM06:2025 Excessive Agency'],
+                        'EU AI Act': ['Article 26: Obligations of deployers', 'Annex III, Point 4: Employment management systems']
+                    }
+                },
+                'External users only': {
+                    frameworks: {
+                        'NIST AI RMF': ['GOVERN-4.1: Safety-first mindset', 'MEASURE-2.7: Security resilience'],
+                        'OWASP Top 10 for LLM Apps': ['LLM01:2025 Prompt Injection', 'LLM05:2025 Improper Output Handling', 'LLM10:2025 Unbounded Consumption'],
+                        'EU AI Act': ['Article 50(1): AI system disclosure']
+                    }
+                },
+                'Both internal and external users': {
+                    frameworks: {
+                        'NIST AI RMF': ['GOVERN-2: Role-based access', 'MEASURE-2.7: Multi-context security'],
+                        'OWASP Top 10 for LLM Apps': ['LLM01:2025 Prompt Injection', 'LLM02:2025 Sensitive Information Disclosure', 'LLM06:2025 Excessive Agency'],
+                        'EU AI Act': ['Article 26: Mixed deployment obligations', 'Article 50: Transparency requirements']
+                    }
+                }
+            },
+            'input_sensitivity': {
+                'Public or non-sensitive': {
+                    frameworks: {
+                        'NIST AI RMF': ['MAP-2.3: Data collection validation'],
+                        'OWASP Top 10 for LLM Apps': ['LLM01:2025 Prompt Injection']
+                    }
+                },
+                'Confidential or personal': {
+                    frameworks: {
+                        'NIST AI RMF': ['MEASURE-2.10: Privacy risk examination'],
+                        'OWASP Top 10 for LLM Apps': ['LLM02:2025 Sensitive Information Disclosure'],
+                        'EU AI Act': ['Article 26(9): Data Protection Impact Assessment', 'Article 10(5): Special category data processing']
+                    }
+                },
+                'Highly sensitive IP or strategic': {
+                    frameworks: {
+                        'NIST AI RMF': ['GOVERN-5: Third-party relationships', 'MEASURE-2.7: Security testing'],
+                        'OWASP Top 10 for LLM Apps': ['LLM02:2025 Sensitive Information Disclosure', 'LLM03:2025 Supply Chain'],
+                        'EU AI Act': ['Article 78: Confidentiality protection']
+                    }
+                }
+            },
+            'data_access': {
+                'Yes': {
+                    frameworks: {
+                        'NIST AI RMF': ['GOVERN-1.2: Data governance alignment'],
+                        'OWASP Top 10 for LLM Apps': ['LLM08:2025 Vector and Embedding Weaknesses', 'LLM01:2025 Prompt Injection'],
+                        'EU AI Act': ['Article 10: Data governance requirements']
+                    }
+                },
+                'No': {
+                    frameworks: {
+                        'NIST AI RMF': ['MAP-1.1: System limitation documentation'],
+                        'OWASP Top 10 for LLM Apps': ['LLM09:2025 Misinformation'],
+                        'EU AI Act': ['Simplified compliance due to no runtime data']
+                    }
+                }
+            },
+            'training_method': {
+                'No, base model only': {
+                    frameworks: {
+                        'NIST AI RMF': ['GOVERN-6.1: Third-party entity policies', 'MANAGE-3.2: Pre-trained model monitoring'],
+                        'OWASP Top 10 for LLM Apps': ['LLM03:2025 Supply Chain'],
+                        'EU AI Act': ['Article 25(4): Provider agreements']
+                    }
+                },
+                'Yes, fine-tuned with public or non-sensitive data': {
+                    frameworks: {
+                        'NIST AI RMF': ['MAP-2.3: Data collection due diligence'],
+                        'OWASP Top 10 for LLM Apps': ['LLM04: Data and Model Poisoning'],
+                        'EU AI Act': ['Article 10: Data quality requirements']
+                    }
+                },
+                'Yes, fine-tuned with sensitive or proprietary data': {
+                    frameworks: {
+                        'NIST AI RMF': ['MEASURE-2.10: Privacy risk documentation'],
+                        'OWASP Top 10 for LLM Apps': ['LLM02:2025 Sensitive Information Disclosure'],
+                        'EU AI Act': ['Article 10(5): Special category data restrictions']
+                    }
+                }
+            },
+            'model_origin': {
+                'Open source model': {
+                    frameworks: {
+                        'OWASP Top 10 for LLM Apps': ['LLM03:2025 Supply Chain'],
+                        'EU AI Act': ['Article 2(12): Open-source exemptions unless high-risk system']
+                    }
+                },
+                'Proprietary service': {
+                    frameworks: {
+                        'NIST AI RMF': ['GOVERN-5: Third-party relationships'],
+                        'OWASP Top 10 for LLM Apps': ['LLM02:2025 Sensitive Information Disclosure'],
+                        'EU AI Act': ['Article 26: Deployer obligations', 'Article 25(4): Provider agreements']
+                    }
+                }
+            },
+            'statefulness': {
+                'Yes': {
+                    frameworks: {
+                        'NIST AI RMF': ['MEASURE-2.10: Privacy risk examination'],
+                        'OWASP Top 10 for LLM Apps': ['LLM02:2025 Sensitive Information Disclosure'],
+                        'EU AI Act': ['GDPR compliance for stored personal data']
+                    }
+                },
+                'No': {
+                    frameworks: {
+                        'NIST AI RMF': ['MAP-1.1: Stateless limitation documentation'],
+                        'OWASP Top 10 for LLM Apps': ['Mitigates LLM02 risks'],
+                        'EU AI Act': ['GDPR data minimization alignment']
+                    }
+                }
+            },
+            'deployment_architecture': {
+                'Public cloud, isolated': {
+                    frameworks: {
+                        'OWASP Top 10 for LLM Apps': ['LLM10:2025 Unbounded Consumption', 'LLM03:2025 Supply Chain'],
+                        'EU AI Act': ['Article 15: Cybersecurity requirements']
+                    }
+                },
+                'Public cloud, hybrid': {
+                    frameworks: {
+                        'OWASP Top 10 for LLM Apps': ['LLM06:2025 Excessive Agency'],
+                        'EU AI Act': ['Article 15: Enhanced cybersecurity for connected systems']
+                    }
+                },
+                'On premises or private cloud': {
+                    frameworks: {
+                        'OWASP Top 10 for LLM Apps': ['LLM03:2025 Supply Chain'],
+                        'EU AI Act': ['Article 15: Physical infrastructure cybersecurity']
+                    }
+                },
+                'Edge or client device': {
+                    frameworks: {
+                        'OWASP Top 10 for LLM Apps': ['LLM03:2025 Supply Chain vulnerabilities']
+                    }
+                }
+            },
+            'agency': {
+                'No': {
+                    frameworks: {
+                        'NIST AI RMF': ['MEASURE-2.5: Information validity'],
+                        'OWASP Top 10 for LLM Apps': ['LLM09:2025 Misinformation'],
+                        'EU AI Act': ['Article 50: Transparency obligations']
+                    }
+                },
+                'Yes': {
+                    frameworks: {
+                        'NIST AI RMF': ['MANAGE-2.4: System deactivation mechanisms'],
+                        'OWASP Top 10 for LLM Apps': ['LLM06:2025 Excessive Agency'],
+                        'EU AI Act': ['Article 14: Human oversight requirements']
+                    }
+                }
+            },
+            'autonomy_level': {
+                'Human in the loop': {
+                    frameworks: {
+                        'OWASP Top 10 for LLM Apps': ['LLM06:2025 Excessive Agency mitigation'],
+                        'EU AI Act': ['Article 14: Human oversight implementation']
+                    }
+                },
+                'Fully autonomous': {
+                    frameworks: {
+                        'NIST AI RMF': ['MANAGE-2.4: Emergency stop mechanisms'],
+                        'OWASP Top 10 for LLM Apps': ['LLM06:2025 Excessive Agency - extreme risk'],
+                        'EU AI Act': ['Article 14: Real-time monitoring and stop button']
+                    }
+                }
+            }
+        };
+        
+        // Application state
+        let currentQuestion = 0;
+        let answers = {};
+        let selectedAnswer = null;
+        let selectedAnswers = []; // For multi-select questions
+        
+        function startAssessment() {
+            document.getElementById('startScreen').classList.remove('active');
+            document.getElementById('questionScreen').classList.add('active');
+            loadQuestion();
+        }
+        
+        function loadQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('questionText').textContent = question.text;
+            document.getElementById('questionSubtext').textContent = question.subtext || '';
+            
+            // Update progress
+            const progressPercent = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progressPercent + '%';
+            document.getElementById('progressText').textContent = `Step ${currentQuestion + 1} of ${questions.length}`;
+            
+            // Handle back button visibility
+            document.getElementById('backBtn').style.visibility = currentQuestion === 0 ? 'hidden' : 'visible';
+            
+            // Clear and populate answers
+            const container = document.getElementById('answersContainer');
+            container.innerHTML = '';
+            
+            question.answers.forEach((answer, index) => {
+                const card = document.createElement('div');
+                card.className = 'answer-card';
+                card.setAttribute('data-option', answer.option);
+                card.setAttribute('data-question', question.id);
+                card.setAttribute('data-index', index);
+                
+                const isMultiSelect = question.id === 'capabilities';
+                const controlType = isMultiSelect ? 'checkbox' : 'radio';
+                
+                const infoContent = getAnswerInfo(question.id, answer.option);
+                
+                card.innerHTML = `
+                    <div class="${controlType}"></div>
+                    <div class="answer-main">${answer.main}</div>
+                    <div class="answer-sub">${answer.sub}</div>
+                    <div class="info-button" onclick="toggleInfo(this)">i</div>
+                    <div class="info-section">${infoContent}</div>
+                `;
+                
+                card.addEventListener('click', function(e) {
+                    if (!e.target.closest('.info-button')) {
+                        if (isMultiSelect) {
+                            toggleSelection(answer.option, card);
+                        } else {
+                            selectAnswer(answer.option, card);
+                        }
+                    }
+                });
+                
+                container.appendChild(card);
+            });
+            
+            // Restore previous selections if going back
+            restorePreviousSelections();
+            
+            // Skip autonomy question if agency is "No"
+            if (question.id === 'autonomy_level' && answers['agency'] === 'No') {
+                nextQuestion();
+                return;
+            }
+        }
+        
+        function selectAnswer(option, cardElement) {
+            // Remove previous selection
+            document.querySelectorAll('.answer-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Select current card
+            cardElement.classList.add('selected');
+            selectedAnswer = option;
+            
+            // Enable continue button
+            document.getElementById('continueBtn').disabled = false;
+        }
+        
+        function toggleSelection(option, cardElement) {
+            const isSelected = cardElement.classList.contains('selected');
+            
+            if (isSelected) {
+                cardElement.classList.remove('selected');
+                selectedAnswers = selectedAnswers.filter(answer => answer !== option);
+            } else {
+                cardElement.classList.add('selected');
+                selectedAnswers.push(option);
+            }
+            
+            // Enable/disable continue button based on selections
+            document.getElementById('continueBtn').disabled = selectedAnswers.length === 0;
+        }
+        
+        function toggleInfo(button) {
+            const infoSection = button.parentElement.querySelector('.info-section');
+            infoSection.classList.toggle('expanded');
+        }
+        
+        function getAnswerInfo(questionId, option) {
+            const analysis = riskAnalysis[questionId]?.[option];
+            if (!analysis?.frameworks) {
+                return '<p>No specific framework guidance available for this option.</p>';
+            }
+            
+            let content = '<h5>Framework Considerations:</h5><ul>';
+            
+            Object.entries(analysis.frameworks).forEach(([framework, controls]) => {
+                content += `<li><strong>${framework}:</strong> ${controls.join(', ')}</li>`;
+            });
+            
+            content += '</ul>';
+            return content;
+        }
+        
+        function nextQuestion() {
+            // Save current answer
+            const question = questions[currentQuestion];
+            if (question.id === 'capabilities') {
+                answers[question.id] = [...selectedAnswers];
+            } else {
+                answers[question.id] = selectedAnswer;
+            }
+            
+            // Reset selections
+            selectedAnswer = null;
+            selectedAnswers = [];
+            
+            // Move to next question or show results
+            currentQuestion++;
+            
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+            
+            // Disable continue button
+            document.getElementById('continueBtn').disabled = true;
+        }
+        
+        function goBack() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        }
+        
+        function restorePreviousSelections() {
+            const question = questions[currentQuestion];
+            const savedAnswer = answers[question.id];
+            
+            if (!savedAnswer) return;
+            
+            if (question.id === 'capabilities' && Array.isArray(savedAnswer)) {
+                // Multi-select restoration
+                selectedAnswers = [...savedAnswer];
+                savedAnswer.forEach(option => {
+                    const card = document.querySelector(`[data-option="${option}"]`);
+                    if (card) {
+                        card.classList.add('selected');
+                    }
+                });
+                
+                document.getElementById('continueBtn').disabled = selectedAnswers.length === 0;
+            } else {
+                // Single-select restoration
+                selectedAnswer = savedAnswer;
+                const card = document.querySelector(`[data-option="${savedAnswer}"]`);
+                if (card) {
+                    card.classList.add('selected');
+                    document.getElementById('continueBtn').disabled = false;
+                }
+            }
+        }
+        
+        function showResults() {
+            document.getElementById('questionScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+            
+            generateResults();
+        }
+        
+        function generateResults() {
+            const narrativeSummary = document.getElementById('narrativeSummary');
+            const frameworksDashboard = document.getElementById('frameworksDashboard');
+            
+            narrativeSummary.innerHTML = generateNarrativeSummary();
+            frameworksDashboard.innerHTML = generateFrameworkAnalysis();
+        }
+        
+        function generateNarrativeSummary() {
+            let description = `<h3>Summary</h3><div class="narrative-text">`;
+            
+            const domain = answers['domain'];
+            const deploymentScenario = answers['deployment_scenario'];
+            const audience = answers['audience'];
+            const capabilities = answers['capabilities'] || [];
+            const hasAgency = answers['agency'] === 'Yes';
+            const isAutonomous = answers['autonomy_level'] === 'Fully autonomous';
+            const isAgentic = hasAgency || isAutonomous || capabilities.length > 2;
+            
+            description += `<p>Your AI system operates in a <strong>${domain.toLowerCase()}</strong> domain, delivered as <strong>${deploymentScenario.toLowerCase()}</strong> with <strong>${audience.toLowerCase()}</strong> access.`;
+            
+            if (capabilities.length > 0) {
+                description += ` The system's capabilities include <strong>${capabilities.join(', ').toLowerCase()}</strong>, each bringing specific risk considerations from prompt injection to content authenticity requirements.`;
+            }
+            
+            description += `</p>`;
+            
+            // Add agentic system considerations
+            if (isAgentic) {
+                description += `<p><strong>Agentic System Considerations:</strong> Your system exhibits agentic characteristics through `;
+                
+                const agenticTraits = [];
+                if (hasAgency) agenticTraits.push('tool execution capabilities');
+                if (isAutonomous) agenticTraits.push('autonomous operation');
+                if (capabilities.length > 2) agenticTraits.push('multi-function coordination');
+                if (answers['statefulness'] === 'Yes') agenticTraits.push('persistent memory');
+                
+                description += agenticTraits.join(', ') + '. ';
+                
+                description += `Agentic systems create expanded attack surfaces across four critical hand-offs: user inputs to agent instructions, agent to connected tools, agent to memory storage, and between multiple agents. These systems require enhanced security practices including persistent identity binding, fine-grained short-lived credentials, unified telemetry with causal links, and fork-safe controls to prevent security bypasses in spawned processes.</p>`;
+            }
+            
+            // Add memory and data considerations
+            if (answers['statefulness'] === 'Yes' || answers['input_sensitivity'] !== 'Public or non-sensitive') {
+                description += `<p><strong>Data Security Focus:</strong> `;
+                
+                if (answers['statefulness'] === 'Yes') {
+                    description += `Your system's persistent memory capabilities require careful session isolation, data retention policies, and memory poisoning protections. `;
+                }
+                
+                if (answers['input_sensitivity'] === 'Confidential or personal') {
+                    description += `Processing confidential and personally identifiable information demands strict data governance, encryption at rest and in transit, and comprehensive audit trails. `;
+                } else if (answers['input_sensitivity'] === 'Highly sensitive IP or strategic') {
+                    description += `Handling sensitive intellectual property and strategic data requires the highest level of protection including air-gapped deployment considerations and enhanced access controls. `;
+                }
+                
+                description += `</p>`;
+            }
+            
+            // Add deployment architecture considerations
+            if (answers['deployment_architecture'] === 'Public cloud, hybrid' || answers['data_access'] === 'Yes') {
+                description += `<p><strong>Network and Integration Risks:</strong> `;
+                
+                if (answers['deployment_architecture'] === 'Public cloud, hybrid') {
+                    description += `Your hybrid cloud deployment expands the attack surface through network connections to other systems. `;
+                }
+                
+                if (answers['data_access'] === 'Yes') {
+                    description += `Real-time data access capabilities require robust API security, connection monitoring, and data validation to prevent unauthorized access or data poisoning. `;
+                }
+                
+                description += `Consider implementing network segmentation, API gateways with strict authentication, and continuous monitoring of all external connections.</p>`;
+            }
+            
+            // Add practical guidance section
+            description += `</div><div class="practical-guidance">
+                <h4>Next Steps</h4>
+                <ul class="guidance-list">`;
+            
+            if (isAgentic) {
+                description += `
+                    <li>Implement the four foundational security habits for agentic systems: identity binding, scoped credentials, unified telemetry, and fork-safe controls</li>
+                    <li>Conduct threat modeling across the six-layer agent stack (serving, model/memory, orchestration, tools, protocols, interaction surfaces)</li>`;
+            }
+            
+            description += `
+                    <li>Review the framework-specific recommendations below and prioritize based on your system's risk profile</li>
+                    <li>Develop an implementation roadmap with clear milestones and regular security assessments</li>`;
+            
+            if (hasAgency || answers['data_access'] === 'Yes') {
+                description += `
+                    <li>Establish continuous monitoring with trace IDs for all tool calls, API interactions, and data access patterns</li>`;
+            }
+            
+            if (isAgentic) {
+                description += `
+                    <li>Plan for regular red team exercises focusing on agent-specific attack vectors including prompt injection, tool abuse, and memory poisoning</li>`;
+            } else {
+                description += `
+                    <li>Establish ongoing monitoring and assessment processes appropriate for your system's complexity</li>`;
+            }
+            
+            description += `
+                </ul>
+            </div>`;
+            
+            return description;
+        }
+        
+        function generateFrameworkAnalysis() {
+            const frameworks = extractFrameworkControls();
+            let html = '';
+            
+            // Sort frameworks by priority
+            const sortedFrameworks = Object.entries(frameworks).sort(([nameA], [nameB]) => {
+                const priorities = {
+                    'NIST AI RMF': 1,
+                    'OWASP Top 10 for LLM Apps': 2,
+                    'EU AI Act': 3
+                };
+                return (priorities[nameA] || 999) - (priorities[nameB] || 999);
+            });
+            
+            sortedFrameworks.forEach(([frameworkName, controls]) => {
+                html += generateFrameworkCard(frameworkName, controls);
+            });
+            
+            return html;
+        }
+        
+        function extractFrameworkControls() {
+            const frameworks = {
+                'NIST AI RMF': new Set(),
+                'OWASP Top 10 for LLM Apps': new Set(),
+                'EU AI Act': new Set()
+            };
+            
+            Object.entries(answers).forEach(([questionId, answer]) => {
+                const questionAnalysis = riskAnalysis[questionId];
+                if (!questionAnalysis) return;
+                
+                if (Array.isArray(answer)) {
+                    // Multi-select question (capabilities)
+                    answer.forEach(selectedOption => {
+                        const optionAnalysis = questionAnalysis[selectedOption];
+                        if (optionAnalysis?.frameworks) {
+                            Object.entries(optionAnalysis.frameworks).forEach(([framework, controls]) => {
+                                controls.forEach(control => frameworks[framework].add(control));
+                            });
+                        }
+                    });
+                } else {
+                    // Single-select question
+                    const optionAnalysis = questionAnalysis[answer];
+                    if (optionAnalysis?.frameworks) {
+                        Object.entries(optionAnalysis.frameworks).forEach(([framework, controls]) => {
+                            controls.forEach(control => frameworks[framework].add(control));
+                        });
+                    }
+                }
+            });
+            
+            // Convert Sets to Arrays and sort
+            Object.keys(frameworks).forEach(framework => {
+                frameworks[framework] = Array.from(frameworks[framework]).sort();
+            });
+            
+            return frameworks;
+        }
+        
+        function generateFrameworkCard(frameworkName, controls) {
+            if (!controls || controls.length === 0) {
+                return `
+                    <div class="framework-card">
+                        <h3>${frameworkName}</h3>
+                        <div class="no-controls">No specific controls identified for your configuration.</div>
+                    </div>
+                `;
+            }
+            
+            const controlsList = controls.map(control => 
+                `<li>${createFrameworkLink(frameworkName, control)}</li>`
+            ).join('');
+            
+            return `
+                <div class="framework-card">
+                    <h3>${frameworkName}</h3>
+                    <ul class="framework-controls">
+                        ${controlsList}
+                    </ul>
+                </div>
+            `;
+        }
+        
+        function createFrameworkLink(framework, control) {
+            const urls = {
+                'NIST AI RMF': getNISTUrl(control),
+                'OWASP Top 10 for LLM Apps': getOWASPUrl(control),
+                'EU AI Act': getEUActUrl(control)
+            };
+            
+            const url = urls[framework];
+            return url ? `<a href="${url}" target="_blank" rel="noopener noreferrer">${control}</a>` : control;
+        }
+        
+        function getNISTUrl(control) {
+            const baseUrl = 'https://ai.gov';
+            const controlMap = {
+                'GOVERN': `${baseUrl}/ai-risk-management-framework/govern/`,
+                'MAP': `${baseUrl}/ai-risk-management-framework/map/`,
+                'MEASURE': `${baseUrl}/ai-risk-management-framework/measure/`,
+                'MANAGE': `${baseUrl}/ai-risk-management-framework/manage/`
+            };
+            
+            const category = control.split('-')[0];
+            return controlMap[category] || `${baseUrl}/ai-risk-management-framework/`;
+        }
+        
+        function getOWASPUrl(control) {
+            const baseUrl = 'https://owasp.org/www-project-top-10-for-large-language-model-applications';
+            
+            const controlMap = {
+                'LLM01': `${baseUrl}/Archive/1_1_PromptInjection/`,
+                'LLM02': `${baseUrl}/Archive/1_1_SensitiveInfoDisclosure/`,
+                'LLM03': `${baseUrl}/Archive/1_1_SupplyChain/`,
+                'LLM04': `${baseUrl}/Archive/1_1_ModelDoS/`,
+                'LLM05': `${baseUrl}/Archive/1_1_OutputHandling/`,
+                'LLM06': `${baseUrl}/Archive/1_1_ExcessiveAgency/`,
+                'LLM07': `${baseUrl}/Archive/1_1_SystemPrompt/`,
+                'LLM08': `${baseUrl}/Archive/1_1_VectorEmbedding/`,
+                'LLM09': `${baseUrl}/Archive/1_1_Misinformation/`,
+                'LLM10': `${baseUrl}/Archive/1_1_UnboundedConsumption/`
+            };
+            
+            const llmCode = control.substring(0, 5);
+            return controlMap[llmCode] || baseUrl;
+        }
+        
+        function getEUActUrl(control) {
+            const baseUrl = 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689';
+            
+            if (control.includes('Article')) {
+                const articleMatch = control.match(/Article (\d+)/);
+                if (articleMatch) {
+                    return `${baseUrl}#art_${articleMatch[1]}`;
+                }
+            }
+            
+            if (control.includes('Annex')) {
+                const annexMatch = control.match(/Annex ([IVX]+)/);
+                if (annexMatch) {
+                    return `${baseUrl}#anx_${annexMatch[1]}`;
+                }
+            }
+            
+            return baseUrl;
+        }
+        
+        // Theme management
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            
+            const toggle = document.querySelector('.theme-toggle');
+            toggle.classList.toggle('dark', newTheme === 'dark');
+            
+            // Store theme preference
+            try {
+                localStorage.setItem('theme', newTheme);
+            } catch (error) {
+                console.warn('Could not store theme preference');
+            }
+        }
+        
+        // Initialize theme
+        function initializeTheme() {
+            let theme = 'light';
+            
+            try {
+                theme = localStorage.getItem('theme');
+            } catch (error) {
+                console.warn('Could not access localStorage for theme preference');
+            }
+            
+            if (!theme) {
+                theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            
+            document.documentElement.setAttribute('data-theme', theme);
+            const toggle = document.querySelector('.theme-toggle');
+            if (toggle) {
+                toggle.classList.toggle('dark', theme === 'dark');
+            }
+        }
+        
+        // Terms of use function
+        function showTerms() {
+            const termsWindow = window.open('', '_blank', 'width=600,height=800,scrollbars=yes');
+            termsWindow.document.write(`
+                <html>
+                <head>
+                    <title>Terms of Use - AI Risk Praxis Self Assessment Tool</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 2rem; line-height: 1.6; }
+                        h1, h2 { color: #2c2c2c; }
+                        .warning { background: #fff3cd; padding: 1rem; border-radius: 4px; margin: 1rem 0; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Disclaimer and Terms of Use</h1>
+                    <p><strong>Last Updated: June 21, 2024</strong></p>
+                    
+                    <div class="warning">
+                        <p><strong>Welcome to the AI Risk Praxis Self-Assessment Tool (the "Tool"). Before you begin, please read the following disclaimer carefully. By using the Tool, you agree to these terms.</strong></p>
+                    </div>
+                    
+                    <h2>1. For Informational Purposes Only</h2>
+                    <p>This Tool is intended for informational and educational purposes only. It is designed to serve as a preliminary triage system to help you identify potential areas of risk based on the provided frameworks. It is not a substitute for a formal risk assessment, a compliance audit, legal counsel, or professional security advice.</p>
+                    
+                    <h2>2. No Guarantee of Accuracy or Completeness</h2>
+                    <p>The information and framework mappings provided are based on our interpretation of the NIST AI RMF, OWASP Top 10 for LLMs, and the EU AI Act as of the "Last Updated" date. These frameworks evolve, new risks emerge, and the legal landscape changes rapidly. We do not warrant the accuracy, timeliness, or completeness of the information presented.</p>
+                    
+                    <h2>3. User's Responsibility</h2>
+                    <p>You are solely responsible for conducting your own thorough risk analysis and for ensuring your organization's compliance with all applicable laws, regulations, and internal policies. The output of this Tool should be used as just one of many inputs into your own comprehensive due diligence process.</p>
+                    
+                    <h2>4. Provided "AS IS"</h2>
+                    <p>This Tool is an open-source project provided "AS IS" and "AS AVAILABLE", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and non-infringement.</p>
+                    
+                    <h2>5. Limitation of Liability</h2>
+                    <p>In no event shall the authors, contributors, or copyright holders be liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the Tool or the use or other dealings in the Tool.</p>
+                </body>
+                </html>
+            `);
+        }
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTheme();
+            
+            // Theme toggle
+            document.querySelector('.theme-toggle').addEventListener('click', toggleTheme);
+            
+            // Listen for system theme changes
+            if (window.matchMedia) {
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+                    if (!localStorage.getItem('theme')) {
+                        const theme = e.matches ? 'dark' : 'light';
+                        document.documentElement.setAttribute('data-theme', theme);
+                        const toggle = document.querySelector('.theme-toggle');
+                        if (toggle) {
+                            toggle.classList.toggle('dark', theme === 'dark');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
