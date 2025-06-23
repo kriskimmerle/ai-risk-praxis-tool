@@ -940,12 +940,12 @@
                     {
                         option: 'Vendor AI SaaS product',
                         main: 'Vendor AI SaaS product',
-                        sub: 'Products like Microsoft 365 Copilot, Amazon Q, Salesforce Einstein, Cursor, and Windsurf'
+                        sub: 'Microsoft 365 Copilot, Salesforce Einstein, Cursor'
                     },
                     {
                         option: 'AI feature added to an existing vendor product',
                         main: 'AI feature added to an existing vendor product',
-                        sub: 'For example, Adobe Acrobat with LLM summarization capabilities'
+                        sub: 'Acrobat with LLM summarize'
                     },
                     {
                         option: 'Homegrown AI',
@@ -1100,28 +1100,38 @@
             },
             {
                 id: 'deployment_architecture',
-                text: 'How is the system deployed?',
+                text: 'How is the system deployed? (Select all that apply)',
                 subtext: 'Network posture drives identity, observability, and data-egress controls.',
                 answers: [
                     {
-                        option: "Public Cloud",
-                        main: "Public Cloud",
-                        sub: "Runs in a standalone VPC/VNet on AWS, Azure, or GCP with no persistent network path back to corporate or on-prem systems."
+                        option: "On-Premises",
+                        main: "On-Premises",
+                        sub: "AI infrastructure and applications run entirely on servers physically located within the organization's own data centers. The organization maintains full control over hardware, software, and data."
                     },
                     {
-                        option: 'Hybrid / Private Cloud',
-                        main: 'Hybrid / Private Cloud',
-                        sub: 'Cloud VPC or VNet connected to internal resources through VPN, Direct Connect, or Private Link'
+                        option: 'Public Cloud',
+                        main: 'Public Cloud',
+                        sub: 'Running AI workloads on shared infrastructure provided by vendors like AWS, Azure, or Google Cloud. Resources are accessed over the internet and billed on a pay-as-you-go basis.'
                     },
                     {
-                        option: 'On premises',
-                        main: 'On premises',
-                        sub: 'Hosted in a company-controlled data center'
+                        option: 'Private Cloud',
+                        main: 'Private Cloud',
+                        sub: 'Dedicated cloud infrastructure used exclusively by one organization. This can be hosted on-premises in the organization\'s own data center or hosted in a vendor\'s data center but on dedicated hardware.'
                     },
                     {
-                        option: 'Edge or client device',
-                        main: 'Edge or client device',
-                        sub: 'Runs on laptops, mobiles, or other endpoints'
+                        option: 'Hybrid Cloud',
+                        main: 'Hybrid Cloud',
+                        sub: 'Combines cloud environments (public or private) with on-premises infrastructure, with orchestration between the platforms. Common patterns include training models in the cloud while deploying on-premises, keeping data on-premises while compute happens in the cloud, or using cloud bursting for peak AI workloads.'
+                    },
+                    {
+                        option: 'Multi-Cloud',
+                        main: 'Multi-Cloud',
+                        sub: 'Using multiple public cloud providers such as AWS and Azure for different AI workloads or capabilities. Organizations often adopt this approach to leverage specialized AI services from different providers, avoid vendor lock-in, or meet data residency requirements.'
+                    },
+                    {
+                        option: 'Edge',
+                        main: 'Edge',
+                        sub: 'Runs AI inference on distributed devices closer to where data is generated, such as IoT devices, branch locations, or mobile devices, rather than in centralized data centers.'
                     }
                 ]
             },
@@ -1346,27 +1356,46 @@
                 }
             },
             'deployment_architecture': {
-                'Public Cloud': {
+                'On-Premises': {
                     frameworks: {
-                        'OWASP Top 10 for LLM Apps': ['LLM10:2025 Unbounded Consumption', 'LLM03:2025 Supply Chain'],
-                        'EU AI Act': ['Article 15: Cybersecurity requirements']
-                    }
-                },
-                'Hybrid / Private Cloud': {
-                    frameworks: {
-                        'OWASP Top 10 for LLM Apps': ['LLM06:2025 Excessive Agency'],
-                        'EU AI Act': ['Article 15: Enhanced cybersecurity for connected systems']
-                    }
-                },
-                'On premises': {
-                    frameworks: {
+                        'NIST AI RMF': ['GOVERN-3.1: Internal controls', 'MEASURE-2.7: Physical security'],
                         'OWASP Top 10 for LLM Apps': ['LLM03:2025 Supply Chain'],
                         'EU AI Act': ['Article 15: Physical infrastructure cybersecurity']
                     }
                 },
-                'Edge or client device': {
+                'Public Cloud': {
                     frameworks: {
-                        'OWASP Top 10 for LLM Apps': ['LLM03:2025 Supply Chain vulnerabilities']
+                        'NIST AI RMF': ['GOVERN-5: Third-party relationships'],
+                        'OWASP Top 10 for LLM Apps': ['LLM10:2025 Unbounded Consumption', 'LLM03:2025 Supply Chain'],
+                        'EU AI Act': ['Article 15: Cybersecurity requirements']
+                    }
+                },
+                'Private Cloud': {
+                    frameworks: {
+                        'NIST AI RMF': ['GOVERN-5: Third-party relationships', 'MEASURE-2.7: Dedicated infrastructure security'],
+                        'OWASP Top 10 for LLM Apps': ['LLM03:2025 Supply Chain'],
+                        'EU AI Act': ['Article 15: Enhanced cybersecurity for dedicated systems']
+                    }
+                },
+                'Hybrid Cloud': {
+                    frameworks: {
+                        'NIST AI RMF': ['GOVERN-3.1: Multi-environment controls', 'MEASURE-2.7: Cross-platform security'],
+                        'OWASP Top 10 for LLM Apps': ['LLM06:2025 Excessive Agency', 'LLM03:2025 Supply Chain'],
+                        'EU AI Act': ['Article 15: Enhanced cybersecurity for connected systems']
+                    }
+                },
+                'Multi-Cloud': {
+                    frameworks: {
+                        'NIST AI RMF': ['GOVERN-5: Multiple third-party relationships', 'MEASURE-2.7: Multi-vendor security'],
+                        'OWASP Top 10 for LLM Apps': ['LLM03:2025 Supply Chain', 'LLM10:2025 Unbounded Consumption'],
+                        'EU AI Act': ['Article 15: Cross-provider cybersecurity requirements']
+                    }
+                },
+                'Edge': {
+                    frameworks: {
+                        'NIST AI RMF': ['MEASURE-2.7: Distributed system security'],
+                        'OWASP Top 10 for LLM Apps': ['LLM03:2025 Supply Chain vulnerabilities', 'LLM10:2025 Unbounded Consumption'],
+                        'EU AI Act': ['Article 15: Edge device cybersecurity']
                     }
                 }
             },
@@ -1439,7 +1468,7 @@
                 card.setAttribute('data-question', question.id);
                 card.setAttribute('data-index', index);
                 
-                const isMultiSelect = question.id === 'capabilities';
+                const isMultiSelect = question.id === 'capabilities' || question.id === 'deployment_architecture';
                 const controlType = isMultiSelect ? 'checkbox' : 'radio';
                 
                 const infoContent = getAnswerInfo(question.id, answer.option);
@@ -1528,7 +1557,7 @@
         function nextQuestion() {
             // Save current answer
             const question = questions[currentQuestion];
-            if (question.id === 'capabilities') {
+            if (question.id === 'capabilities' || question.id === 'deployment_architecture') {
                 answers[question.id] = [...selectedAnswers];
             } else {
                 answers[question.id] = selectedAnswer;
@@ -1564,7 +1593,7 @@
             
             if (!savedAnswer) return;
             
-            if (question.id === 'capabilities' && Array.isArray(savedAnswer)) {
+            if ((question.id === 'capabilities' || question.id === 'deployment_architecture') && Array.isArray(savedAnswer)) {
                 // Multi-select restoration
                 selectedAnswers = [...savedAnswer];
                 savedAnswer.forEach(option => {
@@ -1653,14 +1682,22 @@
             }
             
             // Add deployment architecture considerations
-            if (answers['deployment_architecture'] === 'Hybrid / Private Cloud' || answers['data_access'] === 'Yes') {
+            const deploymentTypes = answers['deployment_architecture'] || [];
+            const hasHybridOrMultiCloud = deploymentTypes.includes('Hybrid Cloud') || deploymentTypes.includes('Multi-Cloud');
+            const hasDataAccess = answers['data_access'] === 'Yes';
+            
+            if (hasHybridOrMultiCloud || hasDataAccess || deploymentTypes.length > 1) {
                 description += `<p><strong>Network and Integration Risks:</strong> `;
                 
-                if (answers['deployment_architecture'] === 'Hybrid / Private Cloud') {
-                    description += `Your hybrid cloud deployment expands the attack surface through network connections to other systems. `;
+                if (deploymentTypes.length > 1) {
+                    description += `Your multi-environment deployment across ${deploymentTypes.join(', ').toLowerCase()} creates complex security boundaries requiring coordinated controls. `;
                 }
                 
-                if (answers['data_access'] === 'Yes') {
+                if (hasHybridOrMultiCloud) {
+                    description += `Hybrid and multi-cloud architectures expand the attack surface through network connections to multiple systems and providers. `;
+                }
+                
+                if (hasDataAccess) {
                     description += `Real-time data access capabilities require robust API security, connection monitoring, and data validation to prevent unauthorized access or data poisoning. `;
                 }
                 
