@@ -571,16 +571,17 @@
         }
         
         :root[data-theme="dark"] .narrative-text {
-            color: #2c2c2c;
+            color: var(--color-text-primary);
         }
         
         :root[data-theme="dark"] .narrative-summary {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            background: var(--color-surface);
+            border-color: var(--color-border);
         }
         
         /* Practical Guidance */
         .practical-guidance {
-            background: #ffffff;
+            background: var(--color-surface);
             border-radius: 12px;
             padding: 1.5rem;
             border-left: 4px solid #e53e3e;
@@ -602,7 +603,7 @@
         }
         
         .guidance-list li {
-            color: #718096;
+            color: var(--color-text-secondary);
             margin-bottom: 0.75rem;
             padding-left: 1.5rem;
             position: relative;
@@ -1664,6 +1665,21 @@
                 }
                 
                 description += `Consider implementing network segmentation, API gateways with strict authentication, and continuous monitoring of all external connections.</p>`;
+            }
+            
+            // Add specific mitigation recommendations as part of main narrative
+            description += `<p><strong>Specific Mitigation Recommendations:</strong></p>
+                <p><strong>Prompt Injection:</strong> Strip system/moderator tokens from user input; apply a deny-list on dangerous verbs; wrap model calls in a read-only transaction by default.</p>
+                <p><strong>Output Misuse:</strong> Apply a second LLM or regex rule-set to check for PII, credentials, or unsafe code blocks before sending to the user.</p>`;
+            
+            // Supply chain mitigations for open source models
+            if (answers['model_origin'] === 'Open source model') {
+                description += `<p><strong>Supply Chain Tampering:</strong> Fetch open weights only from a pinned digest; verify checksum; run HiddenLayer scan before first inference.</p>`;
+            }
+            
+            // Excessive agency mitigations for agentic systems
+            if (hasAgency) {
+                description += `<p><strong>Excessive Agency:</strong> Require human approval tokens for file-system writes, dev-ops actions, or finance APIs until confidence grows.</p>`;
             }
             
             // Add practical guidance section
