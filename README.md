@@ -6,13 +6,6 @@ An on-ramp for AI risk management that bridges the gap between 200-page PDFs and
 
 Most practitioners know they need to manage AI risk, but the guidance lives in overwhelming documents and vendor dashboards. Faced with that overload, many freeze or follow checklists they don't understand. This tool is the on-ramp. Use it whether you embed a proprietary model, run open weights, or rely on a vendor feature already baked into your stack. It gets you from zero to one, then hands the baton back so you can tailor the next steps to your own reality.
 
-## Project Structure
-
-AI-Risk-Praxis/
-├── index.html          # Complete self-contained application
-├── README.md           # This file
-└── LICENSE             # MIT License
-
 ## Architecture Decision
 
 This project uses a **single-file architecture** with embedded CSS and JavaScript for maximum reliability and portability. The tool is completely self-contained in `index.html`.
