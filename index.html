@@ -169,7 +169,7 @@
         }
         
         .question-subtext {
-            font-size: 1rem;
+            font-size: 1.125rem;
             color: var(--color-text-secondary);
             line-height: 1.6;
             margin-bottom: 2rem;
@@ -516,28 +516,166 @@
             margin-bottom: 2rem;
         }
 
-        /* Risk Metrics Dashboard */
+        /* Risk Dashboard */
+        .risk-dashboard {
+            margin-bottom: 3rem;
+        }
+
+        /* Hero Risk Metric */
+        .hero-risk-section {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: var(--color-surface);
+            border-radius: 16px;
+            border: 2px solid var(--color-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-risk-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-background) 100%);
+            z-index: -1;
+        }
+
+        .hero-risk-value {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .hero-risk-value.low { color: #22c55e; }
+        .hero-risk-value.medium { color: #f59e0b; }
+        .hero-risk-value.high { color: #e53e3e; }
+
+        .hero-risk-label {
+            font-size: 1.25rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .risk-badge.low { background: #22c55e20; color: #15803d; border: 2px solid #22c55e; }
+        .risk-badge.medium { background: #f59e0b20; color: #b45309; border: 2px solid #f59e0b; }
+        .risk-badge.high { 
+            background: #e53e3e20; 
+            color: #dc2626; 
+            border: 2px solid #e53e3e;
+            animation: pulse-badge 2s infinite;
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Risk Metrics Grid */
         .risk-metrics-dashboard {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
-            margin-bottom: 3rem;
-            padding: 2rem;
-            background: var(--color-surface);
-            border-radius: 12px;
-            border: 2px solid var(--color-border);
+            margin-bottom: 2rem;
         }
 
         .risk-metric-card {
             text-align: center;
             padding: 1.5rem;
-            background: var(--color-background);
-            border-radius: 8px;
+            background: var(--color-surface);
+            border-radius: 12px;
             border: 1px solid var(--color-border);
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 180px;
+        }
+
+        .risk-metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-color: #e53e3e;
+        }
+
+        .risk-metric-card.has-indicator::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #22c55e 0%, #f59e0b 50%, #e53e3e 100%);
+        }
+
+        .risk-metric-card.has-indicator .risk-indicator {
+            position: absolute;
+            bottom: 0;
+            left: var(--risk-position);
+            width: 4px;
+            height: 8px;
+            background: white;
+            transform: translateX(-50%);
+            border-radius: 2px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .progress-ring {
+            width: 100px;
+            height: 100px;
+            margin: 0.5rem auto;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .progress-ring svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .progress-ring circle {
+            fill: none;
+            stroke-width: 6;
+        }
+
+        .progress-ring .background {
+            stroke: var(--color-border);
+        }
+
+        .progress-ring .progress {
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1.5s ease-out;
+            animation: draw 1.5s ease-out;
+        }
+
+        .progress.low { stroke: #22c55e; }
+        .progress.medium { stroke: #f59e0b; }
+        .progress.high { stroke: #e53e3e; }
+
+        @keyframes draw {
+            from { stroke-dashoffset: 282.7; }
+            to { stroke-dashoffset: var(--offset); }
         }
 
         .risk-metric-value {
-            font-size: 2rem;
+            font-size: 1.75rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
             display: block;
@@ -553,24 +691,126 @@
             font-weight: 500;
         }
 
-        .risk-level-indicator {
-            width: 100%;
+        /* Framework Distribution Donut */
+        .framework-distribution {
+            text-align: center;
+            margin: 2rem 0;
+            padding: 2rem;
+            background: var(--color-surface);
+            border-radius: 12px;
+            border: 1px solid var(--color-border);
+        }
+
+        .framework-donut {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            position: relative;
+            margin: 1rem auto;
+            background: conic-gradient(
+                #e53e3e 0deg var(--nist-angle),
+                #f97316 var(--nist-angle) var(--owasp-end),
+                #3b82f6 var(--owasp-end) 360deg
+            );
+        }
+
+        .framework-donut::after {
+            content: '';
+            position: absolute;
+            top: 25%;
+            left: 25%;
+            width: 50%;
+            height: 50%;
+            background: var(--color-surface);
+            border-radius: 50%;
+        }
+
+        .framework-legend {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        /* Risk Breakdown Bars */
+        .risk-breakdown {
+            margin: 2rem 0;
+            padding: 2rem;
+            background: var(--color-surface);
+            border-radius: 12px;
+            border: 1px solid var(--color-border);
+        }
+
+        .risk-breakdown h3 {
+            color: #e53e3e;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .risk-breakdown-subtitle {
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+            font-style: italic;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .risk-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .risk-bar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .bar-label {
+            min-width: 120px;
+            font-size: 0.875rem;
+            color: var(--color-text-secondary);
+        }
+
+        .bar-track {
+            flex: 1;
             height: 8px;
             background: var(--color-border);
             border-radius: 4px;
-            margin: 1rem 0;
             overflow: hidden;
         }
 
-        .risk-level-fill {
+        .bar-fill {
             height: 100%;
             border-radius: 4px;
-            transition: width 0.5s ease;
+            transition: width 1s ease-out;
+            animation: fill-bar 1s ease-out;
         }
 
-        .risk-level-fill.low { background: linear-gradient(90deg, #22c55e, #16a34a); }
-        .risk-level-fill.medium { background: linear-gradient(90deg, #f59e0b, #d97706); }
-        .risk-level-fill.high { background: linear-gradient(90deg, #e53e3e, #dc2626); }
+        .bar-fill.low { background: linear-gradient(90deg, #22c55e, #16a34a); }
+        .bar-fill.medium { background: linear-gradient(90deg, #f59e0b, #d97706); }
+        .bar-fill.high { background: linear-gradient(90deg, #e53e3e, #dc2626); }
+
+        @keyframes fill-bar {
+            from { width: 0%; }
+            to { width: var(--bar-width); }
+        }
         
         /* Narrative Summary */
         .narrative-summary {
@@ -689,6 +929,13 @@
             font-size: 1.75rem;
             color: #e53e3e;
             font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .references-subtitle {
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+            font-style: italic;
             margin-bottom: 1rem;
         }
         
@@ -866,10 +1113,13 @@
                 gap: 1rem;
             }
             
+            .hero-risk-value {
+                font-size: 3rem;
+            }
+            
             .risk-metrics-dashboard {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 1rem;
-                padding: 1rem;
             }
             
             .risk-metric-card {
@@ -878,6 +1128,36 @@
             
             .risk-metric-value {
                 font-size: 1.5rem;
+            }
+            
+            .framework-donut {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .framework-legend {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            
+            .risk-breakdown {
+                padding: 1rem;
+            }
+            
+            .bar-label {
+                min-width: 100px;
+                font-size: 0.75rem;
+            }
+            
+            .progress-ring {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .risk-metric-card {
+                min-height: 160px;
+                padding: 1rem;
             }
             
             .footer-links {
@@ -953,7 +1233,7 @@
         <div class="results-container" id="resultsScreen">
             <div class="results-header">
                 <h2>Results</h2>
-                <p class="results-subtitle">Based on your responses, here's a comprehensive analysis of your AI system:</p>
+                <p class="results-subtitle">Based on your responses, here's a comprehensive risk analysis of your AI system:</p>
             </div>
             
             <div class="narrative-summary" id="narrativeSummary">
@@ -1701,6 +1981,13 @@
             narrativeSummary.insertAdjacentHTML('beforebegin', riskMetrics);
             
             narrativeSummary.innerHTML = generateNarrativeSummary();
+            
+            // Add framework distribution before framework dashboard
+            const frameworkDistribution = generateFrameworkDistribution();
+            if (frameworkDistribution) {
+                frameworksDashboard.insertAdjacentHTML('beforebegin', frameworkDistribution);
+            }
+            
             frameworksDashboard.innerHTML = generateFrameworkAnalysis();
         }
         
@@ -1764,6 +2051,90 @@
             return 'high';
         }
         
+        function generateProgressRing(value, level) {
+            const circumference = 2 * Math.PI * 45; // radius = 45 (for 100px container)
+            const offset = circumference - (value / 10) * circumference;
+            
+            return `
+                <div class="progress-ring">
+                    <svg>
+                        <circle class="background" cx="50" cy="50" r="45"></circle>
+                        <circle class="progress ${level}" cx="50" cy="50" r="45" 
+                                stroke-dasharray="${circumference}" 
+                                stroke-dashoffset="${offset}"></circle>
+                    </svg>
+                </div>
+            `;
+        }
+
+        function generateFrameworkDistribution() {
+            const frameworks = extractFrameworkControls();
+            const nistCount = frameworks['NIST AI RMF']?.length || 0;
+            const owaspCount = frameworks['OWASP Top 10 for LLM Apps']?.length || 0;
+            const euCount = frameworks['EU AI Act']?.length || 0;
+            const total = nistCount + owaspCount + euCount;
+            
+            if (total === 0) return '';
+            
+            const nistPercentage = (nistCount / total) * 100;
+            const owaspPercentage = (owaspCount / total) * 100;
+            const nistAngle = (nistPercentage / 100) * 360;
+            const owaspEnd = nistAngle + (owaspPercentage / 100) * 360;
+            
+            return `
+                <div class="framework-distribution">
+                    <h3>Framework Coverage Distribution</h3>
+                    <div class="framework-donut" style="--nist-angle: ${nistAngle}deg; --owasp-end: ${owaspEnd}deg;"></div>
+                    <div class="framework-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #e53e3e;"></div>
+                            <span>NIST AI RMF (${nistCount})</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #f97316;"></div>
+                            <span>OWASP Top 10 (${owaspCount})</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #3b82f6;"></div>
+                            <span>EU AI Act (${euCount})</span>
+                        </div>
+                    </div>
+                    <p class="references-subtitle" style="margin-top: 1.5rem; text-align: center;">Click any reference below to go directly to the official framework documentation</p>
+                </div>
+            `;
+        }
+
+        function generateRiskBreakdown() {
+            const metrics = calculateRiskMetrics();
+            
+            const riskDimensions = [
+                { label: 'Data Sensitivity', value: metrics.dataSensitivity, level: getRiskLevel(metrics.dataSensitivity) },
+                { label: 'System Complexity', value: metrics.systemComplexity, level: getRiskLevel(metrics.systemComplexity) },
+                { label: 'Audience Exposure', value: metrics.audienceExposure, level: getRiskLevel(metrics.audienceExposure) },
+                { label: 'Deployment Risk', value: metrics.deploymentRisk, level: getRiskLevel(metrics.deploymentRisk) }
+            ];
+            
+            const barsHtml = riskDimensions.map(dimension => `
+                <div class="risk-bar">
+                    <span class="bar-label">${dimension.label}</span>
+                    <div class="bar-track">
+                        <div class="bar-fill ${dimension.level}" style="--bar-width: ${dimension.value * 10}%; width: ${dimension.value * 10}%;"></div>
+                    </div>
+                    <span style="min-width: 30px; font-weight: 600; color: var(--color-text-primary);">${dimension.value}/10</span>
+                </div>
+            `).join('');
+            
+            return `
+                <div class="risk-breakdown">
+                    <h3>Risk Dimension Breakdown</h3>
+                    <p class="risk-breakdown-subtitle">Each dimension contributes to your overall risk score based on system configuration. Data sensitivity is weighted most heavily (35%), followed by system complexity and audience exposure (25% each), with deployment architecture contributing 15%.</p>
+                    <div class="risk-bars">
+                        ${barsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
         function generateRiskMetrics() {
             const metrics = calculateRiskMetrics();
             const frameworks = extractFrameworkControls();
@@ -1778,34 +2149,46 @@
             
             const overallLevel = getRiskLevel(metrics.overallRisk);
             const complexityLevel = getRiskLevel(metrics.systemComplexity);
+            const riskBadgeText = overallLevel.toUpperCase() + ' RISK';
             
             return `
-                <div class="risk-metrics-dashboard">
-                    <div class="risk-metric-card">
-                        <span class="risk-metric-value ${overallLevel}">${metrics.overallRisk}/10</span>
-                        <div class="risk-level-indicator">
-                            <div class="risk-level-fill ${overallLevel}" style="width: ${metrics.overallRisk * 10}%"></div>
+                <div class="risk-dashboard">
+                    <!-- Hero Risk Section -->
+                    <div class="hero-risk-section">
+                        <div class="hero-risk-value ${overallLevel}">${metrics.overallRisk}/10</div>
+                        <div class="hero-risk-label">Overall Risk Score</div>
+                        <div class="risk-badge ${overallLevel}">${riskBadgeText}</div>
+                    </div>
+
+                    <!-- Risk Metrics Grid -->
+                    <div class="risk-metrics-dashboard">
+                        <div class="risk-metric-card">
+                            <span class="risk-metric-value ${criticalControls > 5 ? 'high' : criticalControls > 2 ? 'medium' : 'low'}">${criticalControls}</span>
+                            <span class="risk-metric-label" style="font-weight: 700;"><strong>Critical Controls</strong></span>
+                            <div style="font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 0.75rem; text-align: center; line-height: 1.4; max-width: 200px;">
+                                ${criticalControls > 5 
+                                    ? 'Your system triggers multiple high-priority security controls across prompt injection protection, agency limitations, and governance requirements.' 
+                                    : criticalControls > 2 
+                                    ? 'Your system requires several important security controls, particularly around user input validation and access management.' 
+                                    : 'Your system has a focused set of essential security controls to implement.'}
+                            </div>
                         </div>
-                        <span class="risk-metric-label">Overall Risk Score</span>
-                    </div>
-                    
-                    <div class="risk-metric-card">
-                        <span class="risk-metric-value ${complexityLevel}">${metrics.systemComplexity}/10</span>
-                        <div class="risk-level-indicator">
-                            <div class="risk-level-fill ${complexityLevel}" style="width: ${metrics.systemComplexity * 10}%"></div>
+                        
+                        <div class="risk-metric-card">
+                            <span class="risk-metric-value ${totalControls > 15 ? 'high' : totalControls > 8 ? 'medium' : 'low'}">${totalControls}</span>
+                            <span class="risk-metric-label" style="font-weight: 700;"><strong>Total Framework Controls</strong></span>
+                            <div style="font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 0.75rem; text-align: center; line-height: 1.4; max-width: 200px;">
+                                ${totalControls > 15 
+                                    ? 'Your system requires comprehensive coverage across multiple frameworks, indicating a complex risk profile that demands thorough security implementation.' 
+                                    : totalControls > 8 
+                                    ? 'Your system needs moderate framework coverage with focus on key security areas identified by your configuration.' 
+                                    : 'Your system has a streamlined set of framework requirements, allowing for focused implementation efforts.'}
+                            </div>
                         </div>
-                        <span class="risk-metric-label">System Complexity</span>
                     </div>
-                    
-                    <div class="risk-metric-card">
-                        <span class="risk-metric-value ${criticalControls > 5 ? 'high' : criticalControls > 2 ? 'medium' : 'low'}">${criticalControls}</span>
-                        <span class="risk-metric-label">Critical Controls</span>
-                    </div>
-                    
-                    <div class="risk-metric-card">
-                        <span class="risk-metric-value ${totalControls > 15 ? 'high' : totalControls > 8 ? 'medium' : 'low'}">${totalControls}</span>
-                        <span class="risk-metric-label">Total Framework Controls</span>
-                    </div>
+
+                    <!-- Risk Breakdown -->
+                    ${generateRiskBreakdown()}
                 </div>
             `;
         }
@@ -2180,6 +2563,7 @@
             `);
         }
         
+
         // Event listeners
         document.addEventListener('DOMContentLoaded', function() {
             initializeTheme();
