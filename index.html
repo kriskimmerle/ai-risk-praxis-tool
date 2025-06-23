@@ -1103,18 +1103,18 @@
                 subtext: 'Network posture drives identity, observability, and data-egress controls.',
                 answers: [
                     {
-                        option: 'Public cloud, isolated',
-                        main: 'Public cloud, isolated',
-                        sub: 'Multi-tenant SaaS or single-tenant VPC with no link to the corporate network'
+                        option: "Public Cloud",
+                        main: "Public Cloud",
+                        sub: "Runs in a standalone VPC/VNet on AWS, Azure, or GCP with no persistent network path back to corporate or on-prem systems."
                     },
                     {
-                        option: 'Public cloud, hybrid',
-                        main: 'Public cloud, hybrid',
+                        option: 'Hybrid / Private Cloud',
+                        main: 'Hybrid / Private Cloud',
                         sub: 'Cloud VPC or VNet connected to internal resources through VPN, Direct Connect, or Private Link'
                     },
                     {
-                        option: 'On premises or private cloud',
-                        main: 'On premises or private cloud',
+                        option: 'On premises',
+                        main: 'On premises',
                         sub: 'Hosted in a company-controlled data center'
                     },
                     {
@@ -1345,19 +1345,19 @@
                 }
             },
             'deployment_architecture': {
-                'Public cloud, isolated': {
+                'Public Cloud': {
                     frameworks: {
                         'OWASP Top 10 for LLM Apps': ['LLM10:2025 Unbounded Consumption', 'LLM03:2025 Supply Chain'],
                         'EU AI Act': ['Article 15: Cybersecurity requirements']
                     }
                 },
-                'Public cloud, hybrid': {
+                'Hybrid / Private Cloud': {
                     frameworks: {
                         'OWASP Top 10 for LLM Apps': ['LLM06:2025 Excessive Agency'],
                         'EU AI Act': ['Article 15: Enhanced cybersecurity for connected systems']
                     }
                 },
-                'On premises or private cloud': {
+                'On premises': {
                     frameworks: {
                         'OWASP Top 10 for LLM Apps': ['LLM03:2025 Supply Chain'],
                         'EU AI Act': ['Article 15: Physical infrastructure cybersecurity']
@@ -1652,10 +1652,10 @@
             }
             
             // Add deployment architecture considerations
-            if (answers['deployment_architecture'] === 'Public cloud, hybrid' || answers['data_access'] === 'Yes') {
+            if (answers['deployment_architecture'] === 'Hybrid / Private Cloud' || answers['data_access'] === 'Yes') {
                 description += `<p><strong>Network and Integration Risks:</strong> `;
                 
-                if (answers['deployment_architecture'] === 'Public cloud, hybrid') {
+                if (answers['deployment_architecture'] === 'Hybrid / Private Cloud') {
                     description += `Your hybrid cloud deployment expands the attack surface through network connections to other systems. `;
                 }
                 
